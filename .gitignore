@@ -31,6 +31,14 @@
 *.out
 *.app
 
+# cryptopp usage
 cryptopp-8.9/
 cryptopp/
+
+# Visual studio specific
 .vs/
+Win32/
+x64/
+
+# Ignoring clang format in include (hard link of the one inside the solution)
+include/kryptopp/.clang-format
