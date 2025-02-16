@@ -1,4 +1,4 @@
-# kryptopp
+# KryptoPP
 CryptoPP wrapper and header-only library.
 
 
