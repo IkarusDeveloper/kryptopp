@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+cryptopp-8.9/
+cryptopp/
+.vs/
