@@ -6,7 +6,6 @@
 #include <array>
 #include <vector>
 
-#pragma once
 namespace KryptoPP
 {
 	using BINARY = std::vector<CryptoPP::byte>;
@@ -27,6 +26,19 @@ namespace KryptoPP
 			thread_local std::uniform_int_distribution<int> distribution(
 				std::numeric_limits<CryptoPP::byte>::min(), std::numeric_limits<CryptoPP::byte>::max());
 			return static_cast<CryptoPP::byte>(distribution(eng));
+		}
+
+		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
+		inline KEY<KEY_SIZE> GetKeyFromString(const std::string& str)
+		{
+			if (str.size() < KEY_SIZE)
+				throw CryptoPP::Exception(CryptoPP::Exception::ErrorType::INVALID_ARGUMENT,
+										  "KryptoPP::AES::GetKeyFromString: String size < KEY_SIZE");
+
+			KEY<KEY_SIZE> key{};
+			std::transform(str.begin(), str.begin() + sizeof(key), key.begin(),
+						   [](const char value) { return static_cast<CryptoPP::byte>(value); });
+			return key;
 		}
 
 		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
@@ -109,17 +121,19 @@ namespace KryptoPP
 		// wrapper getting a std::string as input argument getting an IV via argument
 		// helper function that automatically prepend IV to the binary data
 		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
-		inline BINARY EncryptString(const std::string& str, const KEY<KEY_SIZE>& key, const IV& iv)
+		inline std::string EncryptString(const std::string& str, const KEY<KEY_SIZE>& key, const IV& iv)
 		{
-			return ::KryptoPP::AES::Encrypt(str.data(), str.size(), key, iv);
+			const auto binary = ::KryptoPP::AES::Encrypt(str.data(), str.size(), key, iv);
+			return std::string(reinterpret_cast<const char*>(binary.data(), binary.size()));
 		}
 
-		// wrapper getting a std::string as input argument
-		// helper function that automatically generate random IV and prepend it to the binary data
+		// wrapper getting a std::string as input argument generating a random iv
+		// helper function that automatically prepend IV to the binary data
 		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
-		inline BINARY EncryptString(const std::string& str, const KEY<KEY_SIZE>& key)
+		inline std::string EncryptString(const std::string& str, const KEY<KEY_SIZE>& key)
 		{
-			return ::KryptoPP::AES::Encrypt(str.data(), str.size(), key);
+			const auto iv = KryptoPP::AES::GetRandomIV();
+			return EncryptString(str, key, iv);
 		}
 
 		// helper function that automatically get the IV from the begin of the binaries and
@@ -169,9 +183,9 @@ namespace KryptoPP
 		// helper function that automatically get the IV from the begin of the binaries and
 		// use it to decrypt the binaries using the input key
 		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
-		inline std::string DecryptString(const BINARY& memory, const KEY<KEY_SIZE>& key)
+		inline std::string DecryptString(const std::string& str, const KEY<KEY_SIZE>& key)
 		{
-			const auto binary = Decrypt(memory.data(), memory.size(), key);
+			const auto binary = Decrypt(str.data(), str.size(), key);
 			return std::string(reinterpret_cast<const char*>(binary.data()), binary.size());
 		}
 	}  // namespace AES
