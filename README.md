@@ -126,8 +126,49 @@ catch (const std::exception& except)
 ```
 
 
+# MIX IMPORTANT NOTES
+MIX is a hybrid encryption method that leverages the advantages of AES and the security of RSA.
+Hybrid encryption generates a random encryption key to encrypt data with AES, and this key is then encrypted using RSA. This way, only those who possess the RSA private key can decrypt the encryption key, which is then used to decrypt the original data with AES.
 
+With this method, even large amounts of data can be encrypted, taking advantage of AES for data encryption—since it is very fast—while still maintaining the benefits of asymmetric encryption.
 
+This approach, which utilizes AES in the best possible way (with a random key and a random IV), ensures a high level of robustness without causing efficiency loss or imposing limitations on the maximum data size, which would occur if only RSA were used.
+
+# MIX usage to encrypt Binary
+
+```
+#include <kryptopp/kryptopp.h>
+
+try
+{
+	// getting random key and input memory
+	const auto rsaPair = KryptoPP::RSA::GenerateRandomKeyPair();
+	const auto input = std::string("\"MIX - Hello World!\"");
+	std::cout << "MIX encryption: input.size = " << input.size() << std::endl;
+
+	// encrypting memory
+	const auto encrypted = KryptoPP::MIX::Encrypt(input.data(), input.size(), rsaPair.publicKey);
+	std::cout << "MIX encryption: encrypted.size = " << encrypted.encrypted.size() << std::endl;
+
+	// decrypting memory
+	const auto plain = KryptoPP::MIX::Decrypt(encrypted, rsaPair.privateKey);
+	const auto plainString = std::string{reinterpret_cast<const char*>(plain.data()), plain.size()};
+	std::cout << "MIX encryption: plain.size = " << plainString.size() << std::endl;
+	std::cout << "MIX encryption: plain = " << plainString << "   expected = " << input << std::endl;
+
+	if (input == plainString)
+		std::cout << "MIX encryption: test passed!\n\n";
+	else
+		std::cout << "MIX encryption: test failed!\n\n";
+}
+
+catch (const std::exception& except)
+{
+	// note: i m catching std::exception but it is possible to catch CryptoPP::Exception instead
+	// handling exception!
+	//......
+}
+```
 
 
 
