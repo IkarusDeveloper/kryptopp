@@ -124,7 +124,7 @@ namespace KryptoPP
 		inline std::string EncryptString(const std::string& str, const KEY<KEY_SIZE>& key, const IV& iv)
 		{
 			const auto binary = ::KryptoPP::AES::Encrypt(str.data(), str.size(), key, iv);
-			return std::string(reinterpret_cast<const char*>(binary.data(), binary.size()));
+			return std::string(reinterpret_cast<const char*>(binary.data()), binary.size());
 		}
 
 		// wrapper getting a std::string as input argument generating a random iv
