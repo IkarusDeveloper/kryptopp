@@ -38,7 +38,7 @@ try
 	// decrypting back data
 	const auto plain = KryptoPP::AES::Decrypt(binary, aeskey);
 
-	// plain is not containing back the plain binary which is equal to "binary" the initial input
+	// plain is now containing back the plain binary which is equal to "binary" the initial input
 }
 
 catch (const std::exception& except)
@@ -114,7 +114,7 @@ try
 	// decrypting back data
 	const auto plain = KryptoPP::RSA::Decrypt(encrypted.data(), encrypted.size(), rsaPair.privateKey);
 
-	// plain is not containing back the plain binary which is equal to "binary" the initial input
+	// plain is now containing back the plain binary which is equal to "binary" the initial input
 }
 
 catch (const std::exception& except)
