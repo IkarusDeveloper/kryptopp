@@ -99,22 +99,25 @@ For this reason, generating a 2048-bit key pair is approximately 8 times faster 
 
 try
 {
-	// declaring some binary input
-	KryptoPP::BINARY binary = {CryptoPP::byte(0xFF), CryptoPP::byte(0xFA), CryptoPP::byte(0xAC),
-							   CryptoPP::byte(0x12), CryptoPP::byte(0xFA), CryptoPP::byte(0xAC)};
-
-	// note: i m using a random generated key pair but this wrapper offers
-	//       helper functions to convert them from binary and to binary
+	// getting random key and input memory
 	const auto rsaPair = KryptoPP::RSA::GenerateRandomKeyPair();
-	const auto encrypted = KryptoPP::RSA::Encrypt(binary.data(), binary.size(), rsaPair.publicKey);
-
-	// encrypted is now a BINARY containing the encrypted data
-	// .... use of encrypted data ....
-
-	// decrypting back data
-	const auto plain = KryptoPP::RSA::Decrypt(encrypted.data(), encrypted.size(), rsaPair.privateKey);
-
-	// plain is not containing back the plain binary which is equal to "binary" the initial input
+	const auto input = std::string("\"MIX - Hello World!\"");
+	std::cout << "MIX encryption: input.size = " << input.size() << std::endl;
+	
+	// encrypting memory
+	const auto encrypted = KryptoPP::MIX::Encrypt(input.data(), input.size(), rsaPair.publicKey);
+	std::cout << "MIX encryption: encrypted.size = " << encrypted.encrypted.size() << std::endl;
+	
+	// decrypting memory
+	const auto plain = KryptoPP::MIX::Decrypt(encrypted, rsaPair.privateKey);
+	const auto plainString = std::string{reinterpret_cast<const char*>(plain.data()), plain.size()};
+	std::cout << "MIX encryption: plain.size = " << plainString.size() << std::endl;
+	std::cout << "MIX encryption: plain = " << plainString << "   expected = " << input << std::endl;
+	
+	if (input == plainString)
+		std::cout << "MIX encryption: test passed!\n\n";
+	else
+		std::cout << "MIX encryption: test failed!\n\n";
 }
 
 catch (const std::exception& except)
@@ -126,8 +129,15 @@ catch (const std::exception& except)
 ```
 
 
+# MIX IMPORTANT NOTES
+MIX is a hybrid encryption method that leverages the advantages of AES and the security of RSA.
+Hybrid encryption generates a random encryption key to encrypt data with AES, and this key is then encrypted using RSA. This way, only those who possess the RSA private key can decrypt the encryption key, which is then used to decrypt the original data with AES.
 
+With this method, even large amounts of data can be encrypted, taking advantage of AES for data encryption—since it is very fast—while still maintaining the benefits of asymmetric encryption.
 
+This approach, which utilizes AES in the best possible way (with a random key and a random IV), ensures a high level of robustness without causing efficiency loss or imposing limitations on the maximum data size, which would occur if only RSA were used.
+
+# MIX usage to encrypt Binary
 
 
 
