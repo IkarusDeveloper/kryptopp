@@ -16,7 +16,7 @@ This is useful to ensure that the data has not been modified or corrupted.
 
 
 # AES used to encrypt Binary data
-```
+```c++
 #include <kryptopp/kryptopp.h>
 
 try
@@ -52,7 +52,7 @@ catch (const std::exception& except)
 
 
 # AES usage to encrypt Strings
-```
+```c++
 #include <kryptopp/kryptopp.h>
 
 try
@@ -94,7 +94,7 @@ Note that key generation takes significantly longer for larger keys due to the c
 For this reason, generating a 2048-bit key pair is approximately 8 times faster than generating a 4096-bit key pair, and this makes not possible to generate keys that are large enough to encrypt MBs of data.
 
 # RSA usage to encrypt binary
-```
+```c++
 #include <kryptopp/kryptopp.h>
 
 try
@@ -136,7 +136,7 @@ This approach, which utilizes AES in the best possible way (with a random key an
 
 # MIX usage to encrypt Binary
 
-```
+```c++
 #include <kryptopp/kryptopp.h>
 
 try
