@@ -42,6 +42,18 @@ namespace KryptoPP
 		}
 
 		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
+		inline KEY<KEY_SIZE> GetKeyFromBinary(const BINARY& binary)
+		{
+			if (binary.size() < KEY_SIZE)
+				throw CryptoPP::Exception(CryptoPP::Exception::ErrorType::INVALID_ARGUMENT,
+					"KryptoPP::AES::GetKeyFromBinary: Binary size < KEY_SIZE");
+
+			KEY<KEY_SIZE> key{};
+			std::copy(binary.data(), binary.data() + key.size(), key.data());
+			return key;
+		}
+
+		template <size_t KEY_SIZE = CryptoPP::AES::MAX_KEYLENGTH>
 		inline KEY<KEY_SIZE> GetRandomKEY()
 		{
 			// filling key with random values
